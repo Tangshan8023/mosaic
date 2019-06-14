@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>轮播图</title>
+    <style>
+        *{
+            padding: 0px;
+            margin: 0px;
+
+        }
+    </style>
+</head>
+<body style="text-align: center">
+<canvas id="myCanvas" width="500" height="400" style="background-color: #f5f5f5"></canvas>
+<script>
+    var cav = document.getElementById("myCanvas");
+    var ctx = cav.getContext("2d");
+    ctx.beginPath();
+    var images = new Image();
+    images.src = "./img/img1.jpg";
+    images.onload = function () {
+        draw(this);
+    };
+    function draw(img) {
+        ctx.drawImage(img, 0, 0, 250, 400);
+        // 获取照片所在区域的所有像素值及其它数据
+        var oldImg = ctx.getImageData(0, 0, 250, 400);
+        // 创建新的像素区域
+        var newImg = ctx.createImageData(250, 400);
+
+        var size = 2;
+        // 添加修改像素值;
+        for(var i=0; i<oldImg.width; i++){
+            for(var j=0; j<oldImg.height; j++){
+                // 随机获取5*5范围内的一个像素点
+                var col = reviseImg(oldImg, Math.round((i+Math.random())*size), Math.round((j+Math.random())*size));
+
+                for(var a=0; a<size; a++){
+                    for(var b=0; b<size; b++){
+                        setImg(newImg, i*size+a, j*size+b, col);
+                    }
+                }
+            }
+        }
+        
+        //写入新的像素值
+        ctx.putImageData(newImg, 250, 0);
+        
+    }
+    
+    function reviseImg(img, x, y) {
+        var data = img.data;
+        var w = img.width;
+        var colorArr = [];
+        colorArr[0] = data[(y*w+x)*4+0];
+        colorArr[1] = data[(y*w+x)*4+1];
+        colorArr[2] = data[(y*w+x)*4+2];
+        colorArr[3] = data[(y*w+x)*4+3];
+        return colorArr;
+    }
+    function setImg(img, x, y, color) {
+        var data = img.data;
+        var w = img.width;
+        data[(y*w+x)*4+0] = color[0];
+        data[(y*w+x)*4+1] = color[1];
+        data[(y*w+x)*4+2] = color[2];
+        data[(y*w+x)*4+3] = color[3];
+    }
+</script>
+</body>
+</html>
